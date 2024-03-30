@@ -800,16 +800,120 @@ associated with either Trophic.Level or Migration category? That is, in
 the global test of significance, is the F statistic large enough to
 reject the null hypothesis of an F value of zero?</p>
 <ul>
-<li>Answer</li>
+<li>log(Mass) is associated with both Trophic.Level and Migration as the
+F statistic is large enough to reject the null hypothesis (p &lt;2
+.2e-16 for both)</li>
 </ul></li>
 <li><p>Given the regression coefficients returned for your Migration
 model, which Migration categor(ies) are different than the reference
 level? What level is the reference level? Relevel and assess differences
 among the remaining pair of Migration categories.</p>
 <ul>
-<li>Answer</li>
+<li>In the migration model, the reference level is migration “1”. Both
+migration “2” and migration “3” are different from migration 1.</li>
+<li>Regardless of reference level, all levels are different from one
+another.</li>
 </ul></li>
 </ul>
+<pre class="r"><code># Run linear model 
+m1 &lt;- lm(data = d, logMass ~ Trophic.Level) 
+m2 &lt;- lm(data = d, logMass ~ Migration)
+
+# ... and examine outputs
+summary(m1)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = logMass ~ Trophic.Level, data = d)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -3.4229 -1.1551 -0.3028  0.8982  7.5526 
+## 
+## Coefficients:
+##                        Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)             3.80834    0.01967 193.632  &lt; 2e-16 ***
+## Trophic.LevelHerbivore  0.25639    0.03406   7.528 5.54e-14 ***
+## Trophic.LevelOmnivore   0.01422    0.04116   0.345     0.73    
+## Trophic.LevelScavenger  4.63189    0.34447  13.446  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 1.538 on 11000 degrees of freedom
+##   (5 observations deleted due to missingness)
+## Multiple R-squared:  0.02094,    Adjusted R-squared:  0.02067 
+## F-statistic: 78.42 on 3 and 11000 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>summary(m2)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = logMass ~ Migration, data = d)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -3.8924 -1.1769 -0.3088  0.9152  7.8427 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  3.77457    0.01636 230.710  &lt; 2e-16 ***
+## Migration2   0.75971    0.04731  16.059  &lt; 2e-16 ***
+## Migration3   0.37647    0.05155   7.303 3.02e-13 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 1.535 on 10983 degrees of freedom
+##   (23 observations deleted due to missingness)
+## Multiple R-squared:  0.02563,    Adjusted R-squared:  0.02546 
+## F-statistic: 144.5 on 2 and 10983 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code># Relevel and assess
+# ... migration level 2 as the reference
+d &lt;- d %&gt;%
+    mutate(Migration = relevel(Migration, ref = &quot;2&quot;))
+m3 &lt;- lm(logMass ~ Migration, data = d)
+summary(m3)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = logMass ~ Migration, data = d)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -3.8924 -1.1769 -0.3088  0.9152  7.8427 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  4.53428    0.04439 102.149  &lt; 2e-16 ***
+## Migration1  -0.75971    0.04731 -16.059  &lt; 2e-16 ***
+## Migration3  -0.38324    0.06603  -5.804 6.67e-09 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 1.535 on 10983 degrees of freedom
+##   (23 observations deleted due to missingness)
+## Multiple R-squared:  0.02563,    Adjusted R-squared:  0.02546 
+## F-statistic: 144.5 on 2 and 10983 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code># ... migration level 3 as the reference
+d &lt;- d %&gt;%
+    mutate(Migration = relevel(Migration, ref = &quot;3&quot;))
+m4 &lt;- lm(logMass ~ Migration, data = d)
+summary(m4)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = logMass ~ Migration, data = d)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -3.8924 -1.1769 -0.3088  0.9152  7.8427 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  4.15104    0.04889  84.909  &lt; 2e-16 ***
+## Migration2   0.38324    0.06603   5.804 6.67e-09 ***
+## Migration1  -0.37647    0.05155  -7.303 3.02e-13 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 1.535 on 10983 degrees of freedom
+##   (23 observations deleted due to missingness)
+## Multiple R-squared:  0.02563,    Adjusted R-squared:  0.02546 
+## F-statistic: 144.5 on 2 and 10983 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 <div id="step-3" class="section level4">
 <h4>Step 3</h4>

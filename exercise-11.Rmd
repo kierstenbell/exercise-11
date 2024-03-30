@@ -67,20 +67,39 @@ plot_grid(Box_LogMass_Trophic.Level, Box_LogMass_Migration, nrow = 1)
 
 ```
 
-
 #### Step 2
 - Run linear models using the lm() function to look at the relationship between log(Mass) and Trophic.Level and between log(Mass) and Migration.
 
 - Examine the output of the resultant linear models. Is log(Mass) associated with either Trophic.Level or Migration category? That is, in the global test of significance, is the F statistic large enough to reject the null hypothesis of an F value of zero?
 
-    - Answer
+    - log(Mass) is associated with both Trophic.Level and Migration as the F statistic is large enough to reject the null hypothesis (p <2 .2e-16 for both)
 
 - Given the regression coefficients returned for your Migration model, which Migration categor(ies) are different than the reference level? What level is the reference level? Relevel and assess differences among the remaining pair of Migration categories.
 
-    - Answer 
+    - In the migration model, the reference level is migration "1". Both migration "2" and migration "3" are different from migration 1. 
+    - Regardless of reference level, all levels are different from one another. 
 
 ```{r}
+# Run linear model 
+m1 <- lm(data = d, logMass ~ Trophic.Level) 
+m2 <- lm(data = d, logMass ~ Migration)
 
+# ... and examine outputs
+summary(m1)
+summary(m2)
+
+# Relevel and assess
+# ... migration level 2 as the reference
+d <- d %>%
+    mutate(Migration = relevel(Migration, ref = "2"))
+m3 <- lm(logMass ~ Migration, data = d)
+summary(m3)
+
+# ... migration level 3 as the reference
+d <- d %>%
+    mutate(Migration = relevel(Migration, ref = "3"))
+m4 <- lm(logMass ~ Migration, data = d)
+summary(m4)
 ```
 
 #### Step 3 
