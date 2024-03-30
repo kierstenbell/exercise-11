@@ -107,7 +107,7 @@ summary(m4)
 #### Step 3 
 - Conduct a post-hoc Tukey Honest Significant Differences test to also evaluate which Migration categories differ “significantly” from one another
 
-    - Tukey HSD estimates the difference between the means of groups and calculates the 95% confidence interval for the difference between the corresponding populations. The p-value from a test of the null hypothesis of no difference between the means (p adj). Here, p value is (apparently 0), so we can conclude that the migration levels are signficantly different from each other. (lwr = lower bound of the confidence interval; upr = upper bound of the confidence interval)
+    - Tukey HSD estimates the difference between the means of groups and calculates the 95% confidence interval for the difference between the corresponding populations. The p-value from a test of the null hypothesis of no difference between the means (p adj). Here, p value is (apparently 0), so we can conclude that the migration levels are signficantly different from each other. (lwr = lower bound of the confidence interval; upr = upper bound of the confidence interval; donfidence intervals that cross the vertical line indicate pairs of groups where the difference in mean is not significant)
    
 
 ```{r}
@@ -357,8 +357,46 @@ p6 <- interaction.plot(
 
 - Use this approach to see whether variances in across groups in your various models (e.g., for relative beak length ~ trophic level) are roughly equal. Additionally, do a visual check of whether observations and model residuals within groups look to be normally distributed.
 
-```{r}
-# Visual checks and QQ Plots
+     - Looking at the ratio of variances, they are reasonably close (~1.3). This value is less than 2, so we can presume the assumption may not be violated.  
+    - Looking at raw rounts, the data appear slightly skewed, especially log(Range Size).
+    - Based on the QQ plots generated, we see that the data are not normally distributed as the data do not fall on a straight line. Based on the Scale-Location plots, we also see that the data is not normally distributed as the data do not fall on a horizontal line. 
 
+```{r}
+# Checking ratio of variances
+ratio_relBL <- d_pass %>%
+    group_by(Trophic.Level) %>%
+    summarize(sd = sd(rel_BL, na.rm = TRUE)) %>%
+    pull(sd)
+ratio_relBL <- max(ratio_relBL)/min(ratio_relBL)
+ratio_relBL
+
+ratio_RS <- d_noNA_migration %>%
+  group_by(Migration) %>%
+  summarize(sd = sd(log(Range.Size), na.rm = TRUE)) %>%
+  pull(sd)
+ratio_RS <- max(ratio_RS)/min(ratio_RS)
+ratio_RS
+
+# Checking counts 
+p1 <- ggplot(data = d_pass, aes(x = rel_BL)) + 
+  geom_histogram() + 
+  facet_wrap(~Trophic.Level)
+
+p2 <- ggplot(data = d_noNA_migration, aes(x = log(Range.Size))) + 
+  geom_histogram() + 
+  facet_wrap(~Migration)
+
+plot_grid(p1, p2)
+
+# Visual checks by plotting the lm() 
+# For ease, I am going to just remake the variables although this has been calculated previously. 
+m1 <- lm(data = d_pass, rel_BL ~ Trophic.Level)
+
+par(mfrow = c(2, 2))
+plot(m1)
+
+m2 <- lm(data = d_noNA_migration, logRS ~ Migration)
+par(mfrow = c(2, 2))
+plot(m2)
 ```
 
