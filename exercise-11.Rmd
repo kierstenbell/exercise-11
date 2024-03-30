@@ -125,7 +125,27 @@ plot(logMass_Migration_Tukey)
 - Use a permutation approach to inference to generate a null distribution of F statistic values for the model of log(Mass) in relation to Trophic.Level and calculate a p value for your original F statistic. You can do this either by programming your own permutation test (e.g., by shuffling values for the predictor or response variable among observations and calculating an F statistic for each replicate) or by using the {infer} workflow and setting calculate(stat="F").
 
 ```{r}
+# Get F statistic, then using Module 18 Simulation-Based Inference for the permutation approach
+# Getting F stat
+original.Fstat <- aov(logMass ~ Trophic.Level, data = d) %>%
+    tidy() %>%
+    filter(term == "Trophic.Level") %>%
+    pull(statistic)
+original.Fstat 
 
+# Here's where module 18 comes in 
+# Yay infer 
+permuted.Fstat <- d %>%
+    specify(logMass ~ Trophic.Level) %>%
+    hypothesize(null = "independence") %>%
+    generate(reps = 1000, type = "permute") %>%
+    calculate(stat = "F")
+
+# Let's see those first 6 permutation replicated
+head(permuted.Fstat)
+
+# Plot the null distribution based on permutation using visualize() from {infer}
+visualize(permuted.Fstat) + shade_p_value(obs_stat = original.Fstat, direction = "greater")
 ```
 
 ## Challenge 2
