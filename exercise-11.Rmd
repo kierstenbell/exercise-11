@@ -330,7 +330,7 @@ summary(m9)
 - Use the interaction.plot() function to visualize the interaction between Primary.Lifestyle and Trophic.Level
 
 ```{r}
-interaction.plot(
+p5 <- interaction.plot(
   x.factor = d_pass$Primary.Lifestyle,
   xlab = "Primary Lifestyle",
   trace.factor = d_pass$Trophic.Level,
@@ -340,7 +340,7 @@ interaction.plot(
   ylab = "Mean Relative Beak Length"
 )
 
-interaction.plot(
+p6 <- interaction.plot(
   x.factor = d_pass$Trophic.Level,
   xlab = "Trophic Level",
   trace.factor = d_pass$Primary.Lifestyle,
@@ -352,6 +352,13 @@ interaction.plot(
 
 ```
 
-
 #### Additional Steps 
+- In the exercise above, we really did not do any checking with this dataset to see if the data meet the primary assumptions for standard linear regression and ANOVA, which are that variables/residuals within each grouping level are roughly normally distributed and have roughly equal variances. Sample sizes within each grouping level should also be roughly equal. As noted in Module 20, a general rule of thumb for “equal” variances is to compare the largest and smallest within-grouping level standard deviations and, if this value is less than 2, then it is often reasonable to presume the assumption may not be violated.
+
+- Use this approach to see whether variances in across groups in your various models (e.g., for relative beak length ~ trophic level) are roughly equal. Additionally, do a visual check of whether observations and model residuals within groups look to be normally distributed.
+
+```{r}
+# Visual checks and QQ Plots
+
+```
 
