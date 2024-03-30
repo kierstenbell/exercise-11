@@ -145,7 +145,7 @@ permuted.Fstat <- d %>%
 head(permuted.Fstat)
 
 # Plot the null distribution based on permutation using visualize() from {infer}
-visualize(permuted.Fstat) + shade_p_value(obs_stat = original.Fstat, direction = "greater")
+visualize(permuted.Fstat) + shade_p_value(obs_stat = original.Fstat, direction = "greater") # really far away from the distribution! 
 ```
 
 ## Challenge 2
@@ -158,8 +158,14 @@ visualize(permuted.Fstat) + shade_p_value(obs_stat = original.Fstat, direction =
     - Relative tarsus length, which you should calculate as the residual of log(Tarsus.Length) on log(Mass).
     
 ```{r}
+rel_BL <- lm(logBeak ~ logMass, data = d)
+rel_TL <- lm(logTarsus ~ logMass, data = d)
 
+d <- d %>%
+    mutate(rel_BL= rel_BL$residuals, rel_TL = rel_TL$residuals)
 
+# Check to make sure those variables are added 
+glimpse(d)
 ```
 
 #### Step 2
