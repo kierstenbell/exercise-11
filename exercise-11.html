@@ -355,6 +355,411 @@ display: none;
 </div>
 
 
+<pre class="r"><code># Set up libraries
+library(tidyverse)
+library(skimr)
+library(tidyr)
+library(broom)
+library(infer)</code></pre>
+<div id="preliminaries" class="section level2">
+<h2>Preliminaries</h2>
+<ul>
+<li><p>Set up a new GitHub repo in your GitHub workspace named
+“exercise-11” and clone that down to your computer as a new RStudio
+project. The instructions outlined as Method 1 in Module 6 will be
+helpful</p></li>
+<li><p>Using the {tidyverse} read_csv() function, load the
+“AVONETdataset1.csv” dataset from this URL as a “tibble” named d. As
+discussed in class, this is a recently published dataset that compiles
+morphological measurements and information on various ecological
+variables and geographic range data for more than 11,000 species of
+birds.</p></li>
+<li><p>Winnow the dataset to include only the following variables:
+Species1, Family1, Order1, Beak.Length_Culmen, Beak.Width, Beak.Depth,
+Tarsus.Length, Wing.Length, Tail.Length, Mass, Habitat, Migration,
+Trophic.Level, Trophic.Niche, Min.Latitude, Max.Latitude,
+Centroid.Latitude, Primary.Lifestyle, ** and Range.Size</p></li>
+<li><p>Do a bit of exploratory data analysis with this dataset, e.g.,
+using the {skimr} package. Which of the variables are categorical and
+which are numeric?</p>
+<ul>
+<li>Categorical variables (from {skimr}): Species1, Family1, Order1,
+Habitat, Trophic.Level, Trophic.Niche, Primary.Lifestyle.</li>
+<li>Numberic variables: Beak.Length_Culmen, Beak.Width, Beak.Depth,
+Tarsus.Length, Wing.Length, Tail.Length, Mass, Migration, Min.Latitude,
+Max.Latitude, Centroid.Latitude, Range.Size</li>
+</ul></li>
+</ul>
+<pre class="r"><code>f &lt;- &quot;https://raw.githubusercontent.com/difiore/ada-2024-datasets/main/AVONETdataset1.csv&quot;
+d &lt;- read_csv(f, col_names = TRUE)</code></pre>
+<pre><code>## Rows: 11009 Columns: 37
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr (13): Species1, Family1, Order1, Avibase.ID1, Mass.Source, Mass.Refs.Oth...
+## dbl (24): Sequence, Total.individuals, Female, Male, Unknown, Complete.measu...
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code># Winnow the data set to include specific variables... 
+
+d &lt;- d %&gt;%
+  select(Species1, Family1, Order1, Beak.Length_Culmen, Beak.Width, Beak.Depth,
+        Tarsus.Length, Wing.Length, Tail.Length, Mass, Habitat, Migration, 
+        Trophic.Level, Trophic.Niche, Min.Latitude, Max.Latitude, 
+        Centroid.Latitude, Primary.Lifestyle, Range.Size)
+
+# Explorin&#39; 
+glimpse(d)</code></pre>
+<pre><code>## Rows: 11,009
+## Columns: 19
+## $ Species1           &lt;chr&gt; &quot;Accipiter albogularis&quot;, &quot;Accipiter badius&quot;, &quot;Accip…
+## $ Family1            &lt;chr&gt; &quot;Accipitridae&quot;, &quot;Accipitridae&quot;, &quot;Accipitridae&quot;, &quot;Ac…
+## $ Order1             &lt;chr&gt; &quot;Accipitriformes&quot;, &quot;Accipitriformes&quot;, &quot;Accipitrifor…
+## $ Beak.Length_Culmen &lt;dbl&gt; 27.7, 20.6, 25.0, 22.5, 21.1, 20.0, 20.5, 19.2, 20.…
+## $ Beak.Width         &lt;dbl&gt; 10.6, 8.8, 8.6, 8.9, 8.7, 6.6, 8.3, 7.7, 8.6, 8.6, …
+## $ Beak.Depth         &lt;dbl&gt; 14.7, 11.6, 12.7, 11.9, 11.1, 12.0, 10.9, 9.6, 11.0…
+## $ Tarsus.Length      &lt;dbl&gt; 62.0, 43.0, 58.1, 61.2, 46.4, 48.7, 52.6, 60.3, 43.…
+## $ Wing.Length        &lt;dbl&gt; 235.2, 186.7, 229.6, 202.2, 217.6, 166.0, 163.5, 21…
+## $ Tail.Length        &lt;dbl&gt; 169.0, 140.6, 186.3, 140.8, 153.5, 127.0, 135.4, 15…
+## $ Mass               &lt;dbl&gt; 248.8, 131.2, 287.5, 142.0, 186.5, 122.0, 157.5, 16…
+## $ Habitat            &lt;chr&gt; &quot;Forest&quot;, &quot;Shrubland&quot;, &quot;Woodland&quot;, &quot;Forest&quot;, &quot;Fores…
+## $ Migration          &lt;dbl&gt; 2, 3, 2, 2, 3, 1, 2, 2, 2, 3, 1, 1, 1, 1, 2, 1, 3, …
+## $ Trophic.Level      &lt;chr&gt; &quot;Carnivore&quot;, &quot;Carnivore&quot;, &quot;Carnivore&quot;, &quot;Carnivore&quot;,…
+## $ Trophic.Niche      &lt;chr&gt; &quot;Vertivore&quot;, &quot;Vertivore&quot;, &quot;Vertivore&quot;, &quot;Vertivore&quot;,…
+## $ Min.Latitude       &lt;dbl&gt; -11.73, -29.47, -55.72, -6.31, 31.19, 7.87, -10.36,…
+## $ Max.Latitude       &lt;dbl&gt; -4.02, 46.39, 23.73, -4.08, 55.86, 9.26, 10.12, 0.0…
+## $ Centroid.Latitude  &lt;dbl&gt; -8.15, 8.23, -10.10, -5.45, 45.24, 8.42, 0.71, -23.…
+## $ Primary.Lifestyle  &lt;chr&gt; &quot;Insessorial&quot;, &quot;Insessorial&quot;, &quot;Generalist&quot;, &quot;Insess…
+## $ Range.Size         &lt;dbl&gt; 37461.21, 22374973.00, 14309701.27, 35580.71, 29367…</code></pre>
+<pre class="r"><code>skim(d)</code></pre>
+<table>
+<caption>Data summary</caption>
+<tbody>
+<tr class="odd">
+<td align="left">Name</td>
+<td align="left">d</td>
+</tr>
+<tr class="even">
+<td align="left">Number of rows</td>
+<td align="left">11009</td>
+</tr>
+<tr class="odd">
+<td align="left">Number of columns</td>
+<td align="left">19</td>
+</tr>
+<tr class="even">
+<td align="left">_______________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Column type frequency:</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">character</td>
+<td align="left">7</td>
+</tr>
+<tr class="odd">
+<td align="left">numeric</td>
+<td align="left">12</td>
+</tr>
+<tr class="even">
+<td align="left">________________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Group variables</td>
+<td align="left">None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: character</strong></p>
+<table style="width:100%;">
+<colgroup>
+<col width="23%" />
+<col width="13%" />
+<col width="18%" />
+<col width="5%" />
+<col width="5%" />
+<col width="7%" />
+<col width="11%" />
+<col width="14%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">min</th>
+<th align="right">max</th>
+<th align="right">empty</th>
+<th align="right">n_unique</th>
+<th align="right">whitespace</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Species1</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">9</td>
+<td align="right">36</td>
+<td align="right">0</td>
+<td align="right">11009</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">Family1</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">7</td>
+<td align="right">18</td>
+<td align="right">0</td>
+<td align="right">243</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">Order1</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">10</td>
+<td align="right">19</td>
+<td align="right">0</td>
+<td align="right">36</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">Habitat</td>
+<td align="right">98</td>
+<td align="right">0.99</td>
+<td align="right">4</td>
+<td align="right">14</td>
+<td align="right">0</td>
+<td align="right">11</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">Trophic.Level</td>
+<td align="right">5</td>
+<td align="right">1.00</td>
+<td align="right">8</td>
+<td align="right">9</td>
+<td align="right">0</td>
+<td align="right">4</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">Trophic.Niche</td>
+<td align="right">10</td>
+<td align="right">1.00</td>
+<td align="right">8</td>
+<td align="right">21</td>
+<td align="right">0</td>
+<td align="right">10</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">Primary.Lifestyle</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">6</td>
+<td align="right">11</td>
+<td align="right">0</td>
+<td align="right">5</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table style="width:100%;">
+<colgroup>
+<col width="15%" />
+<col width="8%" />
+<col width="11%" />
+<col width="9%" />
+<col width="9%" />
+<col width="5%" />
+<col width="7%" />
+<col width="8%" />
+<col width="9%" />
+<col width="10%" />
+<col width="4%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">mean</th>
+<th align="right">sd</th>
+<th align="right">p0</th>
+<th align="right">p25</th>
+<th align="right">p50</th>
+<th align="right">p75</th>
+<th align="right">p100</th>
+<th align="left">hist</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Beak.Length_Culmen</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">26.36</td>
+<td align="right">24.39</td>
+<td align="right">4.50</td>
+<td align="right">14.70</td>
+<td align="right">19.90</td>
+<td align="right">28.50</td>
+<td align="right">414.20</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">Beak.Width</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">6.58</td>
+<td align="right">5.15</td>
+<td align="right">0.70</td>
+<td align="right">3.60</td>
+<td align="right">5.00</td>
+<td align="right">7.70</td>
+<td align="right">88.90</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">Beak.Depth</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">8.06</td>
+<td align="right">7.59</td>
+<td align="right">1.00</td>
+<td align="right">3.80</td>
+<td align="right">5.80</td>
+<td align="right">9.40</td>
+<td align="right">110.90</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">Tarsus.Length</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">28.73</td>
+<td align="right">24.84</td>
+<td align="right">2.50</td>
+<td align="right">17.40</td>
+<td align="right">22.00</td>
+<td align="right">31.30</td>
+<td align="right">481.20</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">Wing.Length</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">124.78</td>
+<td align="right">93.44</td>
+<td align="right">0.10</td>
+<td align="right">66.80</td>
+<td align="right">91.50</td>
+<td align="right">145.50</td>
+<td align="right">789.90</td>
+<td align="left">▇▂▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">Tail.Length</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">86.65</td>
+<td align="right">61.08</td>
+<td align="right">0.10</td>
+<td align="right">50.20</td>
+<td align="right">68.70</td>
+<td align="right">99.90</td>
+<td align="right">812.80</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">Mass</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">267.15</td>
+<td align="right">1883.03</td>
+<td align="right">1.90</td>
+<td align="right">15.00</td>
+<td align="right">35.50</td>
+<td align="right">121.00</td>
+<td align="right">111000.00</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">Migration</td>
+<td align="right">23</td>
+<td align="right">1.00</td>
+<td align="right">1.29</td>
+<td align="right">0.62</td>
+<td align="right">1.00</td>
+<td align="right">1.00</td>
+<td align="right">1.00</td>
+<td align="right">1.00</td>
+<td align="right">3.00</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">Min.Latitude</td>
+<td align="right">57</td>
+<td align="right">0.99</td>
+<td align="right">-6.44</td>
+<td align="right">22.37</td>
+<td align="right">-85.58</td>
+<td align="right">-21.22</td>
+<td align="right">-7.15</td>
+<td align="right">8.07</td>
+<td align="right">68.08</td>
+<td align="left">▁▃▇▃▁</td>
+</tr>
+<tr class="even">
+<td align="left">Max.Latitude</td>
+<td align="right">57</td>
+<td align="right">0.99</td>
+<td align="right">11.51</td>
+<td align="right">23.32</td>
+<td align="right">-65.12</td>
+<td align="right">-3.33</td>
+<td align="right">9.00</td>
+<td align="right">22.07</td>
+<td align="right">85.01</td>
+<td align="left">▁▃▇▂▁</td>
+</tr>
+<tr class="odd">
+<td align="left">Centroid.Latitude</td>
+<td align="right">57</td>
+<td align="right">0.99</td>
+<td align="right">2.95</td>
+<td align="right">22.07</td>
+<td align="right">-71.04</td>
+<td align="right">-9.73</td>
+<td align="right">-0.22</td>
+<td align="right">15.28</td>
+<td align="right">78.43</td>
+<td align="left">▁▃▇▂▁</td>
+</tr>
+<tr class="even">
+<td align="left">Range.Size</td>
+<td align="right">57</td>
+<td align="right">0.99</td>
+<td align="right">2578859.38</td>
+<td align="right">7629310.06</td>
+<td align="right">0.88</td>
+<td align="right">54052.87</td>
+<td align="right">416076.61</td>
+<td align="right">2187040.21</td>
+<td align="right">136304432.20</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+</tbody>
+</table>
+</div>
 <div id="challenge-1" class="section level2">
 <h2>Challenge 1</h2>
 <div id="step-1" class="section level4">
