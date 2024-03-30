@@ -244,10 +244,54 @@ plot(RS_Mig_Tukey)
 
     - Make boxplots of response variable by each predictor and by the combination of predictors.
     - Run linear models for each predictor separately and interpret the model output.
+    
+         - Relative beak length is significantly associated with both primary lifestyle and trophic level. P values for all variables are significant. 
 
 ```{r}
+# Winnow data to just passiformes
 d_pass <- d %>%
     filter(Order1 == "Passeriformes")
+
+# Running one-factor ANOVA
+# Primary lifestyle x relative beak length
+p1 <- ggplot(data = d_pass, aes(x = Primary.Lifestyle, y = rel_BL)) +
+  geom_boxplot() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  xlab("Primary lifestyle") + ylab("Relative beak length")
+
+# Trophic level x relative beak length
+p2 <- ggplot(data = d_pass, aes(x = Trophic.Level, y = rel_BL)) +
+  geom_boxplot() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  xlab("Trophic Level") + ylab("Relative beak length")
+
+# Primary lifestyle x relative beak length, divided by trophic level
+p3 <- ggplot(data = d_pass, aes(x = Primary.Lifestyle, y = rel_BL)) +
+  geom_boxplot() +
+  facet_wrap(~Trophic.Level) + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  xlab("Primary lifestyle") + ylab("Relative beak length")
+
+# Trophic level x relative beak length, divided by primary lifestyle
+p4 <- ggplot(data = d_pass, aes(x = Trophic.Level, y = rel_BL)) +
+  geom_boxplot() +
+  facet_wrap(~Primary.Lifestyle) + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  xlab("Trophic level") + ylab("Relative beak length")
+
+
+library(ggpubr)
+ggarrange(p1, p2, p3, p4, 
+          labels = NULL,
+          ncol = 2, nrow = 2)
+detach(package:ggpubr)
+
+# Running linear models lm()
+m5 <- lm(rel_BL ~ Primary.Lifestyle, data = d_pass)
+m6 <- lm(rel_BL ~ Trophic.Level, data = d_pass)
+
+summary(m5)
+summary(m6)
 
 ```
 
