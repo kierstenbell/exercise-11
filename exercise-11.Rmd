@@ -303,7 +303,7 @@ summary(m6)
 m7 <- lm(rel_BL ~ Primary.Lifestyle + Trophic.Level, data = d_pass)
 summary(m7)
 
-# get the R-squared of the anova by looking at the summary output of the corresponding linear model
+# get ANOVA's R-squared via summary output of the corresponding linear model
 m7_aov <- lm(rel_BL ~ Trophic.Level + Primary.Lifestyle, 
               data = d_pass)
 summary(m7_aov)
@@ -313,10 +313,16 @@ summary(m7_aov)
 #### Step 6
 - Finally, run an additional two-way model with the same dataset and predictors, but adding the possibility of an interaction term. To do this, you should modify your model formula using the colon operator (:) to specify the interaction, e.g., relative beak length ~ Primary.Lifestyle + Trophic.Level + Primary.Lifestyle:Trophic.Level. Based on the model output, what would you now conclude about how relative beak length is related to these two variables?
 
-    - 
+    - Trophic.Level and Primary.Lifestyle are predictive of relative beak length as well as interaction between these two predictors. The three predictors account for 13.5% of the variance in beak length
 
 ```{r}
+m8 <- aov(rel_BL ~ Trophic.Level + Primary.Lifestyle + Trophic.Level:Primary.Lifestyle, 
+              data = d_pass)
+summary(m8)
 
+m9 <- lm(rel_BL ~ Trophic.Level + Primary.Lifestyle + Trophic.Level:Primary.Lifestyle, 
+              data = d_pass)
+summary(m9)
 
 ```
 
