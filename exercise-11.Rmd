@@ -211,11 +211,11 @@ hist(d_noNA_migration$Range.Size) # this needs to be transformed
 hist(log(d_noNA_migration$Range.Size)) # better! 
 
 # lm() can be used to run ANOVAs 
-m1 <- lm(log(Range.Size) ~ Migration, data = d_noNA_migration)
+m1 <- lm(logRS ~ Migration, data = d_noNA_migration)
 summary(m1)
 
 # just to compare for fun
-m1_aov <- aov(log(Range.Size) ~ Migration, data = d_noNA_migration)
+m1_aov <- aov(logRS ~ Migration, data = d_noNA_migration)
 summary(m1_aov)
 
 # Relevel 
@@ -225,7 +225,7 @@ m2 <- lm(logRS ~ Migration, data = d_noNA_migration)
 summary(m2)
 
 ggplot(d_noNA_migration, 
-       aes(x = as.factor(Migration), y = log(Range.Size))) +
+       aes(x = as.factor(Migration), y = logRS)) +
   geom_boxplot() +
   geom_jitter(alpha = 0.05) +
   xlab("Migration") + ylab("log(Range size)")
@@ -372,7 +372,7 @@ ratio_relBL
 
 ratio_RS <- d_noNA_migration %>%
   group_by(Migration) %>%
-  summarize(sd = sd(log(Range.Size), na.rm = TRUE)) %>%
+  summarize(sd = sd(logRS, na.rm = TRUE)) %>%
   pull(sd)
 ratio_RS <- max(ratio_RS)/min(ratio_RS)
 ratio_RS
@@ -382,7 +382,7 @@ p1 <- ggplot(data = d_pass, aes(x = rel_BL)) +
   geom_histogram() + 
   facet_wrap(~Trophic.Level)
 
-p2 <- ggplot(data = d_noNA_migration, aes(x = log(Range.Size))) + 
+p2 <- ggplot(data = d_noNA_migration, aes(x = logRS)) + 
   geom_histogram() + 
   facet_wrap(~Migration)
 
