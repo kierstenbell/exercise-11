@@ -172,7 +172,23 @@ glimpse(d)
 - Make a boxplot or violin plot of your new relative tarsus length variable in relation to Primary.Lifestyle and of your new relative beak length variable in relation to Trophic.Niche
 
 ```{r}
+# Relative tarsus length vs Primary.Lifestyle 
+p1 <- ggplot(data = d %>%
+    drop_na(Primary.Lifestyle), aes(x = Primary.Lifestyle, y = rel_TL)) +
+  geom_violin() + # or geom_boxplot()
+  geom_jitter(alpha = 0.05) + # makes the dots more transparent 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  xlab("Primary lifestyle") + ylab("Relative tarsus length")
 
+# Relative beak length vs Trophic.Niche
+p2 <- ggplot(data = d %>%
+    drop_na(Trophic.Niche), aes(x = Trophic.Niche, y = rel_BL)) +
+  geom_violin() + # or geom_boxplot()
+  geom_jitter(alpha = 0.05) + # makes the dots more transparent) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
+  xlab("Trophic Niche") + ylab("Relative beak length")
+
+plot_grid(p1, p2, nrow = 1)
 
 ```
 
