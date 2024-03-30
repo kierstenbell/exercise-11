@@ -13,6 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 # Set up libraries
 library(tidyverse)
 library(skimr)
+library(cowplot)
 library(tidyr)
 library(broom)
 library(infer)
@@ -50,7 +51,19 @@ skim(d)
 - Make boxplots of log(Mass) in relation to Trophic.Level and Migration behavior type. For each plot, drop from the visualization all species records where the categorical variable of interest is missing from the dataset. Also, you will want to convert the variable Migration (which is scored as a number: “1”, “2”, or “3”) from class numeric to either being classified as a factor or as a character (string) variable.
 
 ```{r}
+# Add variables of interest to dataset d
+d <- d %>%
+    mutate(logMass = log(Mass), logRS = log(Range.Size), logBeak = log(Beak.Length_Culmen),
+        logTarsus = log(Tarsus.Length), Migration = as.factor(Migration))
 
+# Make boxplots
+Box_LogMass_Trophic.Level <- ggplot(data = d %>%
+    drop_na(Trophic.Level), aes(x = Trophic.Level, y = log(Mass))) + geom_boxplot()
+
+Box_LogMass_Migration <- ggplot(data = d %>%
+    drop_na(Migration), aes(x = as.factor(Migration), y = log(Mass))) + geom_boxplot()
+
+plot_grid(Box_LogMass_Trophic.Level, Box_LogMass_Migration, nrow = 1)
 
 ```
 
