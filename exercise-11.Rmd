@@ -330,7 +330,25 @@ summary(m9)
 - Use the interaction.plot() function to visualize the interaction between Primary.Lifestyle and Trophic.Level
 
 ```{r}
+interaction.plot(
+  x.factor = d_pass$Primary.Lifestyle,
+  xlab = "Primary Lifestyle",
+  trace.factor = d_pass$Trophic.Level,
+  trace.label = "Trophic Level",
+  response = d_pass$rel_BL,
+  fun = base::mean, # make sure we use {base} version
+  ylab = "Mean Relative Beak Length"
+)
 
+interaction.plot(
+  x.factor = d_pass$Trophic.Level,
+  xlab = "Trophic Level",
+  trace.factor = d_pass$Primary.Lifestyle,
+  trace.label = "Primary Lifestyle",
+  response = d_pass$rel_BL,
+  fun = base::mean, # make sure we use {base} version
+  ylab = "Mean Relative Beak Length"
+)
 
 ```
 
