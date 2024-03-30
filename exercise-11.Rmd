@@ -292,23 +292,28 @@ m6 <- lm(rel_BL ~ Trophic.Level, data = d_pass)
 
 summary(m5)
 summary(m6)
-
 ```
 
 #### Step 5
 - Run a two-factor model to look at the association between relative beak length and both Primary.Lifestyle and Trophic.Level among the passeriforms. Based on the model output, what would you conclude about how relative beak length is related to these two variables?
 
-    - Answer
+    - Both trophic level and primary lifestyle are predictive of relative beak length. This combination accounts for 10.9% of the variance in relative beak length (based on adjusted R-squared). 
 
 ```{r}
+m7 <- lm(rel_BL ~ Primary.Lifestyle + Trophic.Level, data = d_pass)
+summary(m7)
 
+# get the R-squared of the anova by looking at the summary output of the corresponding linear model
+m7_aov <- lm(rel_BL ~ Trophic.Level + Primary.Lifestyle, 
+              data = d_pass)
+summary(m7_aov)
 
 ```
 
 #### Step 6
 - Finally, run an additional two-way model with the same dataset and predictors, but adding the possibility of an interaction term. To do this, you should modify your model formula using the colon operator (:) to specify the interaction, e.g., relative beak length ~ Primary.Lifestyle + Trophic.Level + Primary.Lifestyle:Trophic.Level. Based on the model output, what would you now conclude about how relative beak length is related to these two variables?
 
-    - Answer
+    - 
 
 ```{r}
 
